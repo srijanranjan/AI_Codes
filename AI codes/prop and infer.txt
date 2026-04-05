@@ -1,0 +1,59 @@
+from sympy import symbols
+import sympy as sp
+
+# Variables
+p, q = symbols('p q')
+
+# Expressions
+prop1 = sp.And(p, q)
+prop2 = sp.Or(p, q)
+prop3 = sp.Implies(p, q)
+prop4 = sp.Not(p)
+
+# Values
+vals = {p: True, q: False}
+
+# Evaluation
+print(prop1.subs(vals))
+print(prop2.subs(vals))
+print(prop3.subs(vals))
+print(prop4.subs(vals))
+
+# Validity (tautology check)
+def is_valid(expr):
+    return all(expr.subs({p:pv, q:qv}) for pv in [True,False] for qv in [True,False])
+
+print("Valid:", is_valid(prop2))
+
+# Satisfiable
+print("Satisfiable:", sp.satisfiable(prop1))
+
+# Entailment
+print("p → q valid?:", sp.ask(sp.Implies(prop1, prop2)))
+
+# CNF / DNF
+print("DNF:", sp.to_dnf(prop3))
+print("CNF:", sp.to_cnf(prop3))
+
+from pyDatalog import pyDatalog
+
+pyDatalog.create_terms('parent, ancestor, age, can_vote, has, low_stock, X, Y, Z, A, Q')
+
+# Facts
++parent('A','B')
++parent('B','C')
++age('Alice',20)
++has('P1',5)
++has('P2',15)
+
+# Rules
+ancestor(X,Y) <= parent(X,Y)
+ancestor(X,Y) <= parent(X,Z) & ancestor(Z,Y)
+
+can_vote(X) <= (age(X,A) & (A > 18))
+low_stock(X) <= (has(X,Q) & (Q < 10))
+
+# Queries
+print("Ancestor:", ancestor(X,'C'))
+print("Can Vote:", can_vote(X))
+print("Low Stock:", low_stock(X))

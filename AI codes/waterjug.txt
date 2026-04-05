@@ -1,0 +1,44 @@
+from collections import deque
+
+def water_jug():
+    start = (0, 0)
+    goal = 2
+
+    queue = deque([start])
+    explored = []
+    step = 1
+
+    print("Step\tQueue (frontier)\tExplored")
+
+    while queue:
+        print(step, "\t", list(queue), "\t\t", explored)
+
+        current = queue.popleft()
+        explored.append(current)
+
+        a, b = current
+
+        if a == goal:
+            print("\nGoal reached!")
+            print("Final State:", current)
+            return
+
+        moves = [
+            (4, b),
+            (a, 3),
+            (0, b),
+            (a, 0),
+            (a - min(a, 3-b), b + min(a, 3-b)),
+            (a + min(b, 4-a), b - min(b, 4-a))
+        ]
+
+        for neighbour in moves:
+            if neighbour not in explored and neighbour not in queue:
+                queue.append(neighbour)
+
+        step += 1
+
+    print("No solution found")
+
+# Call function
+water_jug()

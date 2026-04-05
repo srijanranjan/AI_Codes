@@ -1,0 +1,30 @@
+word = "apple"
+guessed = []
+tries = 6
+
+display = ["_"] * len(word)
+
+while tries > 0 and "_" in display:
+    print("Word:", " ".join(display))
+    guess = input("Enter a letter: ").lower()
+
+    if guess in guessed:
+        print("Already guessed")
+        continue
+
+    guessed.append(guess)
+
+    if guess in word:
+        for i in range(len(word)):
+            if word[i] == guess:
+                display[i] = guess
+    else:
+        tries -= 1
+        print("Wrong guess. Tries left:", tries)
+
+print("\nFinal word:", "".join(display))
+
+if "_" not in display:
+    print("You win")
+else:
+    print("You lose. Word was:", word)

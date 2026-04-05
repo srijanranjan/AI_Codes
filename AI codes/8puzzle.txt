@@ -1,0 +1,49 @@
+import heapq
+
+goal = (1,2,3,4,5,6,7,8,0)
+
+def h(s):  # Manhattan distance
+    d = 0
+    for i in range(9):
+        if s[i] != 0:
+            g = goal.index(s[i])
+            x1,y1 = divmod(i,3)
+            x2,y2 = divmod(g,3)
+            d += abs(x1-x2) + abs(y1-y2)
+    return d
+
+def moves(s):
+    res = []
+    z = s.index(0)
+    x,y = divmod(z,3)
+
+    for dx,dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+        nx,ny = x+dx,y+dy
+        if 0<=nx<3 and 0<=ny<3:
+            nz = nx*3+ny
+            l = list(s)
+            l[z],l[nz] = l[nz],l[z]
+            res.append(tuple(l))
+    return res
+
+def astar(start):
+    pq = [(h(start), start, 0)]  # (f, state, g)
+    visited = set()
+
+    while pq:
+        f,s,g = heapq.heappop(pq)
+
+        if s == goal:
+            print("Goal reached")
+            return
+
+        if s in visited: continue
+        visited.add(s)
+
+        for n in moves(s):
+            heapq.heappush(pq, (g+1+h(n), n, g+1))
+
+    print("No solution")
+
+start = (1,2,3,4,0,6,7,5,8)
+astar(start)
