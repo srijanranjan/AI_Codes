@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers
+
+# Load local data
+df = pd.read_csv("stock.csv")   # must contain 'Close'
+data = df['Close'].values
+
+# Normalize
+data = (data - data.min()) / (data.max() - data.min())
+
+# Create sequences
+def create_seq(data, seq_len=10):
+    X, y = [], []
+    for i in range(len(data) - seq_len):
+        X.append(data[i:i+seq_len])
+        y.append(data[i+seq_len])
+    return np.array(X), np.array(y)
+
+X, y = create_seq(data, 10)
+
+# Reshape for RNN: (samples, time_steps, features)
+X = X.reshape((X.shape[0], X.shape[1], 1))
+
+# Model
+model = tf.keras.Sequential([
+    layers.SimpleRNN(50, activation='relu', input_shape=(10,1)),
+    layers.Dense(1)
+])
+
+model.compile(optimizer='adam', loss='mse')
+
+# Train
+model.fit(X, y, epochs=5, batch_size=32)
