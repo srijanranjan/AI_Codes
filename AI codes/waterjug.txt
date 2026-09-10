@@ -1,44 +1,40 @@
-from collections import deque
+from ollama import chat
 
-def water_jug():
-    start = (0, 0)
-    goal = 2
+def calculator(expression):
+    return eval(expression)
 
-    queue = deque([start])
-    explored = []
-    step = 1
+def word_count(text):
+    return len(text.split())
 
-    print("Step\tQueue (frontier)\tExplored")
+print("AI Banking Assistant")
 
-    while queue:
-        print(step, "\t", list(queue), "\t\t", explored)
+while True:
+    user = input("You: ")
 
-        current = queue.popleft()
-        explored.append(current)
+    if user == "exit":
+        break
 
-        a, b = current
+    if "calculate" in user.lower():
+        try:
+            expression = input("Enter calculation: ")
+            result = calculator(expression)
+            print("Agent:", result)
+        except:
+            print("Invalid calculation")
 
-        if a == goal:
-            print("\nGoal reached!")
-            print("Final State:", current)
-            return
+    elif "count words" in user.lower():
+        text = input("Enter text: ")
+        print("Agent:", word_count(text))
 
-        moves = [
-            (4, b),
-            (a, 3),
-            (0, b),
-            (a, 0),
-            (a - min(a, 3-b), b + min(a, 3-b)),
-            (a + min(b, 4-a), b - min(b, 4-a))
-        ]
+    else:
+        response = chat(
+            model="llama3.2:1b",
+            messages=[
+                {
+                    "role": "user",
+                    "content": user
+                }
+            ]
+        )
 
-        for neighbour in moves:
-            if neighbour not in explored and neighbour not in queue:
-                queue.append(neighbour)
-
-        step += 1
-
-    print("No solution found")
-
-# Call function
-water_jug()
+        print("Agent:", response.message.content)
